@@ -11,6 +11,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.WebRequestHandlerInterceptorAdapter;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -74,6 +77,18 @@ public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapt
         log.debug(prettyJson ? jsonToPrettyString(req) : req.toString());
     }
 
+    private static Map<String, String> getRequestHeadersInfo(HttpServletRequest request) {
+        Map<String, String> map = new HashMap<>();
+
+        Enumeration headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String key = (String) headerNames.nextElement();
+            String value = request.getHeader(key);
+            map.put(key, value);
+        }
+        return map;
+    }
+
     private void traceResponse(HttpServletResponse response, Long counter, long executeTime) throws IOException {
         ObjectNode resp = nodeFactory.objectNode();
         resp.put("request-name", "server-outgoing-response");
@@ -82,7 +97,6 @@ public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapt
         resp.set("headers", mapToJsonNode(getResponseHeadersInfo(response)));
         resp.put("execution-time-ms", executeTime);
 
-        logger.debug(prettyJson ? jsonToPrettyString(resp) : resp.toString());
+        log.debug(prettyJson ? jsonToPrettyString(resp) : resp.toString());
     }
-
 }
