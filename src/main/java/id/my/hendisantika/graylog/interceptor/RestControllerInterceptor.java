@@ -32,6 +32,7 @@ import static id.my.hendisantika.graylog.util.JsonUtil.mapToJsonNode;
  */
 @Slf4j
 @Component
+//public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapter {
 public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapter {
 
     private final AtomicLong counter = new AtomicLong();
