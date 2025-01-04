@@ -1,8 +1,11 @@
 package id.my.hendisantika.graylog.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,5 +29,9 @@ public class JsonUtil {
             log.error("Exception during parsing JSON: {}", e.getMessage());
             return "{ \"error\": \"JsonProcessingException\" }";
         }
+    }
+
+    public static JsonNode mapToJsonNode(Map map) {
+        return jsonMapper.convertValue(map, JsonNode.class);
     }
 }

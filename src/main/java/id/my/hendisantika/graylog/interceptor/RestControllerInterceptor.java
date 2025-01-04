@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static id.my.hendisantika.graylog.util.JsonUtil.jsonToPrettyString;
+import static id.my.hendisantika.graylog.util.JsonUtil.mapToJsonNode;
+
 /**
  * Created by IntelliJ IDEA.
  * Project : spring-boot-graylog
