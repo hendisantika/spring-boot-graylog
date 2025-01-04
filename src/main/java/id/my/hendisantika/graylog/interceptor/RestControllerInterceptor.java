@@ -73,4 +73,16 @@ public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapt
 
         log.debug(prettyJson ? jsonToPrettyString(req) : req.toString());
     }
+
+    private void traceResponse(HttpServletResponse response, Long counter, long executeTime) throws IOException {
+        ObjectNode resp = nodeFactory.objectNode();
+        resp.put("request-name", "server-outgoing-response");
+        resp.put("request-id", counter);
+        resp.put("status-code", response.getStatus());
+        resp.set("headers", mapToJsonNode(getResponseHeadersInfo(response)));
+        resp.put("execution-time-ms", executeTime);
+
+        logger.debug(prettyJson ? jsonToPrettyString(resp) : resp.toString());
+    }
+
 }
