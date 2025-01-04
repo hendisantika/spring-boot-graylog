@@ -1,5 +1,6 @@
 package id.my.hendisantika.graylog.config;
 
+import id.my.hendisantika.graylog.interceptor.RestControllerInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
