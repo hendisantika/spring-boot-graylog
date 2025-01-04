@@ -1,6 +1,8 @@
 package id.my.hendisantika.graylog.interceptor;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -28,4 +30,14 @@ public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapt
 
     @Value("${json.log.pretty}")
     private boolean prettyJson;
+
+    //before the actual handler will be executed
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        long startTime = System.currentTimeMillis();
+        request.setAttribute("startTime", startTime);
+
+        request.setAttribute("request-number", counter.incrementAndGet());
+
+        return true;
+    }
 }
