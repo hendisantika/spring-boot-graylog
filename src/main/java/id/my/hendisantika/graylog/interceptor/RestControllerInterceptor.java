@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.WebRequestHandlerInterceptorAdapter;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -39,5 +40,23 @@ public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapt
         request.setAttribute("request-number", counter.incrementAndGet());
 
         return true;
+    }
+
+    //after the handler is executed
+    public void postHandle(
+            HttpServletRequest request, HttpServletResponse response,
+            Object handler, ModelAndView modelAndView)
+            throws Exception {
+
+        // calculate execution time
+        long startTime = (Long) request.getAttribute("startTime");
+        long endTime = System.currentTimeMillis();
+        long executeTime = endTime - startTime;
+
+        // get request ID
+        long requestNumber = (Long) request.getAttribute("request-number");
+
+        traceRequest(request, requestNumber);
+        traceResponse(response, requestNumber, executeTime);
     }
 }
