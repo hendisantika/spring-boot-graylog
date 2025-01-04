@@ -1,6 +1,7 @@
 package id.my.hendisantika.graylog.interceptor;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.WebRequestHandlerInterceptorAdapter;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -58,5 +60,17 @@ public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapt
 
         traceRequest(request, requestNumber);
         traceResponse(response, requestNumber, executeTime);
+    }
+
+    private void traceRequest(HttpServletRequest request, Long counter) throws IOException {
+        ObjectNode req = nodeFactory.objectNode();
+        req.put("request-name", "server-incoming-request");
+        req.put("request-id", counter);
+        req.put("uri", request.getRequestURI());
+        req.put("method", request.getMethod());
+        req.put("remote-address", request.getRemoteAddr());
+        req.set("headers", mapToJsonNode(getRequestHeadersInfo(request)));
+
+        log.debug(prettyJson ? jsonToPrettyString(req) : req.toString());
     }
 }
