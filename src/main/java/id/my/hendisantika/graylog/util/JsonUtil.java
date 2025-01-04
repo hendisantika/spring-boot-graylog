@@ -1,5 +1,6 @@
 package id.my.hendisantika.graylog.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,4 +19,12 @@ public class JsonUtil {
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
 
+    public static String jsonToPrettyString(Object node) {
+        try {
+            return jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
+        } catch (JsonProcessingException e) {
+            log.error("Exception during parsing JSON: {}", e.getMessage());
+            return "{ \"error\": \"JsonProcessingException\" }";
+        }
+    }
 }
