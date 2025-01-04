@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.WebRequestHandlerInterceptorAdapter;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -98,5 +99,17 @@ public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapt
         resp.put("execution-time-ms", executeTime);
 
         log.debug(prettyJson ? jsonToPrettyString(resp) : resp.toString());
+    }
+
+    private static Map<String, String> getResponseHeadersInfo(HttpServletResponse response) {
+        Map<String, String> map = new HashMap<>();
+
+        Collection<String> headerNames = response.getHeaderNames();
+        for (String name : headerNames) {
+            String key = name;
+            String value = response.getHeader(key);
+            map.put(key, value);
+        }
+        return map;
     }
 }
