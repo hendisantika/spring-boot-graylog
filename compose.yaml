@@ -17,7 +17,7 @@ services:
       - opensearch-data:/usr/share/opensearch/data
 
   graylog:
-    image: graylog/graylog:6.1
+    image: graylog/graylog:6.3
     environment:
       # At least 16 characters; change it for anything beyond local development
       - GRAYLOG_PASSWORD_SECRET=somepasswordpepper-change-me
