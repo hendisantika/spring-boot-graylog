@@ -7,7 +7,60 @@ updates:
       time: '05:00'
       timezone: Asia/Jakarta
     open-pull-requests-limit: 10
-  - package-ecosystem: "github-actions"
+    assignees:
+      - hendisantika
+    commit-message:
+      prefix: "build(deps)"
+      prefix-development: "build(deps-dev)"
+      include: scope
+    # Give new releases a few days to settle before proposing them
+    cooldown:
+      default-days: 3
+      semver-major-days: 7
+    groups:
+      spring-boot:
+        patterns:
+          - "org.springframework.boot*"
+      maven-plugins:
+        patterns:
+          - "org.apache.maven*"
+          - "*maven-plugin"
+      dependencies-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: daily
+      time: '05:00'
+      timezone: Asia/Jakarta
+    assignees:
+      - hendisantika
+    commit-message:
+      prefix: "ci(deps)"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: docker-compose
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: '05:00'
+      timezone: Asia/Jakarta
+    assignees:
+      - hendisantika
+    commit-message:
+      prefix: "chore(deps)"
+    ignore:
+      # Graylog pins the supported OpenSearch/MongoDB ranges; bump majors together by hand
+      - dependency-name: "graylog/graylog"
+        update-types: [ "version-update:semver-major" ]
+      - dependency-name: "opensearchproject/opensearch"
+        update-types: [ "version-update:semver-major" ]
+      - dependency-name: "mongo"
+        update-types: [ "version-update:semver-major" ]
