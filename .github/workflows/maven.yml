@@ -44,4 +44,6 @@ jobs:
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      # Fails when the repository's Dependency graph setting is disabled; don't fail the build for it
+      continue-on-error: true
       uses: advanced-security/maven-dependency-submission-action@a64327a7329c9939cf675e458452febe1894a70c
