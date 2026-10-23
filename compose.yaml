@@ -1,1 +1,42 @@
+# Local Graylog stack, started automatically by spring-boot-docker-compose on `./mvnw spring-boot:run`.
+# Web UI: http://localhost:9000 (admin / admin). Not intended for production use.
 services:
+  mongodb:
+    image: mongo:7.0
+    volumes:
+      - mongodb-data:/data/db
+
+  opensearch:
+    image: opensearchproject/opensearch:2.15.0
+    environment:
+      - discovery.type=single-node
+      - plugins.security.disabled=true
+      - DISABLE_INSTALL_DEMO_CONFIG=true
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+
+  graylog:
+    image: graylog/graylog:6.1
+    environment:
+      # At least 16 characters; change it for anything beyond local development
+      - GRAYLOG_PASSWORD_SECRET=somepasswordpepper-change-me
+      # SHA-256 of "admin"
+      - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
+      - GRAYLOG_ELASTICSEARCH_HOSTS=http://opensearch:9200
+      - GRAYLOG_MONGODB_URI=mongodb://mongodb:27017/graylog
+    entrypoint: /usr/bin/tini -- wait-for-it opensearch:9200 -- /docker-entrypoint.sh
+    depends_on:
+      - mongodb
+      - opensearch
+    ports:
+      - "9000:9000"       # Web UI and REST API
+      - "12201:12201/udp" # GELF UDP input
+    volumes:
+      - graylog-data:/usr/share/graylog/data
+
+volumes:
+  mongodb-data:
+  opensearch-data:
+  graylog-data:
