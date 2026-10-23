@@ -1,16 +1,15 @@
 package id.my.hendisantika.graylog.interceptor;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.WebRequestHandlerInterceptorAdapter;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -32,8 +31,7 @@ import static id.my.hendisantika.graylog.util.JsonUtil.mapToJsonNode;
  */
 @Slf4j
 @Component
-//public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapter {
-public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapter {
+public class RestControllerInterceptor implements HandlerInterceptor {
 
     private final AtomicLong counter = new AtomicLong();
 
@@ -43,6 +41,7 @@ public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapt
     private boolean prettyJson;
 
     //before the actual handler will be executed
+    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         long startTime = System.currentTimeMillis();
         request.setAttribute("startTime", startTime);
@@ -53,6 +52,7 @@ public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapt
     }
 
     //after the handler is executed
+    @Override
     public void postHandle(
             HttpServletRequest request, HttpServletResponse response,
             Object handler, ModelAndView modelAndView)
@@ -70,7 +70,7 @@ public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapt
         traceResponse(response, requestNumber, executeTime);
     }
 
-    private void traceRequest(HttpServletRequest request, Long counter) throws IOException {
+    private void traceRequest(HttpServletRequest request, Long counter) {
         ObjectNode req = nodeFactory.objectNode();
         req.put("request-name", "server-incoming-request");
         req.put("request-id", counter);
@@ -85,16 +85,16 @@ public class RestControllerInterceptor extends WebRequestHandlerInterceptorAdapt
     private static Map<String, String> getRequestHeadersInfo(HttpServletRequest request) {
         Map<String, String> map = new HashMap<>();
 
-        Enumeration headerNames = request.getHeaderNames();
+        Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
-            String key = (String) headerNames.nextElement();
+            String key = headerNames.nextElement();
             String value = request.getHeader(key);
             map.put(key, value);
         }
         return map;
     }
 
-    private void traceResponse(HttpServletResponse response, Long counter, long executeTime) throws IOException {
+    private void traceResponse(HttpServletResponse response, Long counter, long executeTime) {
         ObjectNode resp = nodeFactory.objectNode();
         resp.put("request-name", "server-outgoing-response");
         resp.put("request-id", counter);
